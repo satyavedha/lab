@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <string.h>
+#define S 100
+
+char flag[] = "flag";
+char esc[] = "esc";
+
+void receiver(char data[]){
+    char res[S];
+    int j = strlen(flag); // Skip the initial flag
+    int p = 0;
+
+    while (j < strlen(data) - strlen(flag)) {
+        if (strncmp(&data[j], esc, strlen(esc)) == 0) {
+            j += strlen(esc); // Skip the escape sequence
+        }
+        res[p++] = data[j++];
+    }
+    res[p] = '\0';
+    printf("Original Data is: %s\n", res);
+}
+
+int main() {
+    char data[S];
+    char data1[S];
+    char data2[S];
+
+    printf("Enter Data: ");
+    scanf("%s", data);
+    data[strlen(data)] = '\0';
+
+    // Insert escape sequences if flag or escape sequences are found in the data
+    int j = 0, k = 0;
+    while (j < strlen(data)) {
+        if (strncmp(&data[j], flag, strlen(flag)) == 0 || strncmp(&data[j], esc, strlen(esc)) == 0) {
+            for (int i = 0; i < strlen(esc); i++) {
+                data2[k++] = esc[i];
+            }
+        }
+        data2[k++] = data[j++];
+    }
+    data2[k] = '\0';
+    
+    printf("Data after inserting Esc key if data having flag or Esc byte: %s\n", data2);
+
+    // Create final data by appending flag at both ends
+    strcpy(data1, flag);
+    strcat(data1, data2);
+    strcat(data1, flag);
+    
+    printf("Final data to be sent: %s\n", data1);
+
+    receiver(data1);
+    return 0;
+}
